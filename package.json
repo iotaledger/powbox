@@ -1,11 +1,26 @@
 {
-  "name": "sandbox.node.js",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "",
-  "license": "ISC"
+    "name": "sandbox.node.js",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "precommit": "lint-staged",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "lint-staged": {
+        "*.{js,json,css}": ["prettier --write", "git add"]
+    },
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+        "husky": "^0.14.3",
+        "lint-staged": "^6.0.0",
+        "prettier": "^1.8.2"
+    },
+    "dependencies": {
+        "@google-cloud/datastore": "^1.1.0",
+        "@google-cloud/pubsub": "^0.15.0",
+        "ccurl.interface.js": "0.0.4",
+        "dotenv": "^4.0.0"
+    }
 }
