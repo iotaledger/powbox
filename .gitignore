@@ -1,3 +1,4 @@
 node_modules
-.env
-[!.env.template]
+.env*
+!.env.template
+!.env.minikube

@@ -5,6 +5,7 @@
     "main": "index.js",
     "scripts": {
         "precommit": "lint-staged",
+        "start:worker": "node src/worker/index.js",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "lint-staged": {

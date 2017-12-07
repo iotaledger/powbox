@@ -88,6 +88,7 @@ async function init() {
     const [subscription] = await pubsub.createSubscription(INCOMING_JOBS_TOPIC, INCOMING_JOBS_SUBSCRIPTION);
     subscription.on('error', handleError);
     subscription.on('message', handleAttachToTangle);
+    log('Sandbox worker initialized, waiting for pubsub messages...');
 }
 
 init();
