@@ -6,9 +6,15 @@ const iota = new IOTA({
     sandbox: true
 });
 
-const attachToTangle = (options, callback) => {
-    // do pubsub stuff
-    callback(new Error('method not yet implemented'));
+const attachToTangle = (req, callback) => {
+    req.pubsub
+        .topic(process.env.INCOMING_JOBS_TOPIC)
+        .publisher()
+        .publish(Buffer.from(JSON.stringify(req.body)))
+        .then(msgId => {
+            console.log('New message added to queue: ', msgId);
+            callback();
+        });
 };
 
 module.exports = (req, res) => {
@@ -56,7 +62,7 @@ module.exports = (req, res) => {
             break;
 
         case 'attachToTangle':
-            attachToTangle(req.body, cb);
+            attachToTangle(req, cb);
             break;
 
         case 'broadcastTransactions':

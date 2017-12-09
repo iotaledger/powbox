@@ -2,14 +2,9 @@ require('../common/env');
 
 const log = console.log;
 
-const PubSub = require('@google-cloud/pubsub');
+const pubsub = require('../common/pubsub');
+
 // const Datatore = require('@google-cloud/datastore');
-
-const pubsub = PubSub({
-    projectId: process.env.GCLOUD_PROJECT_ID,
-    keyFilename: process.env.GCLOUD_KEY_FILE
-});
-
 // const datastore = DataStore({});
 
 const ccurl = require('ccurl.interface.js');
@@ -21,12 +16,13 @@ const {
     FINISHED_JOBS_TOPIC
 } = process.env;
 
-let progressJobsTopic;
-let finishedJobsTopic;
+let jobProgress;
+let jobComplete;
 
-async function failJob(err) {}
+function failJob(err) {}
 
-async function handleAttachToTangle(msg) {
+function handleAttachToTangle(msg) {
+    log('Starting job: ', msg.id);
     msg.ack();
     let data;
 
@@ -42,7 +38,7 @@ async function handleAttachToTangle(msg) {
 
     function publishJobProgress(err, progress) {
         log(progress);
-        progressJobsTopic.publish(Buffer.from(JSON.stringify({ id: msg.id, progress })));
+        jobProgress.publish(Buffer.from(JSON.stringify({ id: msg.id, progress })));
     }
 
     function publishJobComplete(err, res) {
@@ -51,7 +47,7 @@ async function handleAttachToTangle(msg) {
             return;
         }
 
-        finishedJobsTopic.publish(Buffer.from(JSON.stringify({ id: msg.id, res })));
+        jobComplete.publish(Buffer.from(JSON.stringify({ id: msg.id, res })));
         log('Job complete: ', res);
     }
 
@@ -64,25 +60,15 @@ function handleError(err) {
 }
 
 async function init() {
-    try {
-        await pubsub.createTopic(INCOMING_JOBS_TOPIC);
-        log(`Created topic ${INCOMING_JOBS_TOPIC}.`);
-    } catch (e) {}
+    await pubsub.init();
 
-    try {
-        await pubsub.createTopic(FINISHED_JOBS_TOPIC);
-        log(`Created topic ${FINISHED_JOBS_TOPIC}.`);
-    } catch (e) {}
+    const client = pubsub.client;
 
-    try {
-        await pubsub.createTopic(PROGRESS_JOBS_TOPIC);
-        log(`Created topic ${PROGRESS_JOBS_TOPIC}.`);
-    } catch (e) {}
+    jobComplete = client.topic(FINISHED_JOBS_TOPIC).publisher();
+    jobProgress = client.topic(PROGRESS_JOBS_TOPIC).publisher();
 
-    finishedJobsTopic = pubsub.topic(FINISHED_JOBS_TOPIC).publisher();
-    progressJobsTopic = pubsub.topic(PROGRESS_JOBS_TOPIC).publisher();
+    const [subscription] = await client.createSubscription(INCOMING_JOBS_TOPIC, INCOMING_JOBS_SUBSCRIPTION);
 
-    const [subscription] = await pubsub.createSubscription(INCOMING_JOBS_TOPIC, INCOMING_JOBS_SUBSCRIPTION);
     subscription.on('error', handleError);
     subscription.on('message', handleAttachToTangle);
     log('Sandbox worker initialized, waiting for pubsub messages...');
