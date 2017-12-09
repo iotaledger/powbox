@@ -15,6 +15,12 @@
             "request": "launch",
             "name": "API Server",
             "program": "${workspaceFolder}/src/server/index.js"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "PubSub",
+            "program": "${workspaceFolder}/src/common/pubsub.js"
         }
     ]
 }
