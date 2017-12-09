@@ -1,9 +1,6 @@
-const log = console.log;
-const path = require('path');
+require('../common/env');
 
-require('dotenv').config({
-    path: path.join(__dirname, '../../.env')
-});
+const log = console.log;
 
 const PubSub = require('@google-cloud/pubsub');
 // const Datatore = require('@google-cloud/datastore');

@@ -9,6 +9,12 @@
             "request": "launch",
             "name": "Worker",
             "program": "${workspaceFolder}/src/worker/index.js"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "API Server",
+            "program": "${workspaceFolder}/src/server/index.js"
         }
     ]
 }
