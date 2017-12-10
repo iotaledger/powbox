@@ -1,4 +1,9 @@
+const amqp = require('amqplib');
 const IOTA = require('iota.lib.js');
+const uuid = require('uuid');
+
+const { createJob } = require('../common/db');
+const { asBuffer } = require('../common/utils');
 
 const iota = new IOTA({
     host: process.env.IRI_HOST,
@@ -6,15 +11,21 @@ const iota = new IOTA({
     sandbox: true
 });
 
-const attachToTangle = (req, callback) => {
-    req.pubsub
-        .topic(process.env.INCOMING_JOBS_TOPIC)
-        .publisher()
-        .publish(Buffer.from(JSON.stringify(req.body)))
-        .then(msgId => {
-            console.log('New message added to queue: ', msgId);
-            callback();
-        });
+const attachToTangle = async (req, callback) => {
+    const conn = await amqp.connect(process.env.BROKER_URL);
+
+    const channel = await conn.createChannel();
+
+    const messageId = await createJob(JSON.stringify(req.body));
+
+    await channel.assertQueue(process.env.INCOMING_QUEUE);
+
+    await channel.sendToQueue(process.env.INCOMING_QUEUE, asBuffer(req.body), {
+        messageId: messageId,
+        appId: process.env.AMQP_APP_ID
+    });
+
+    callback(null, 'Sent message: ' + JSON.stringify(req.body));
 };
 
 module.exports = (req, res) => {

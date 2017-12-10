@@ -1,14 +1,12 @@
 FROM ubuntu:17.04
 
 RUN apt-get update && \
-    apt-get install -y git cmake curl
+    apt-get install -y git cmake curl ca-certificates amqp-tools python gcc g++ xxd
 RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -
 RUN apt-get install -y nodejs
 
 RUN mkdir -p /opt
 RUN git clone https://github.com/iotaledger/ccurl
-RUN apt-get install -y gcc g++
-RUN apt-get install -y xxd
 RUN cd ccurl && git submodule update --init --recursive
 RUN cd ccurl && mkdir build && cd build && cmake .. && cmake --build . && mv lib/libccurl.so /opt/libccurl.so
 
@@ -17,4 +15,5 @@ COPY . /app
 WORKDIR /app
 
 RUN npm install
-CMD ["npm", "run", "start:worker"]
+
+CMD node /app/src/worker/index.js

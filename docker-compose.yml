@@ -1,0 +1,38 @@
+version: "3"
+services:
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    ports:
+      - 3000:3000
+    volumes:
+      - .:/app
+    links:
+      - rabbitmq:rabbitmq-service
+    environment:
+      - BROKER_URL=amqp://guest:guest@rabbitmq-service:5672
+      - INCOMING_QUEUE=attach-to-tangle
+      - IRI_HOST=https://nodes.iota.cafe
+      - IRI_PORT=443
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+    volumes:
+      - .:/app
+    links:
+      - rabbitmq:rabbitmq-service
+    environment:
+      - BROKER_URL=amqp://guest:guest@rabbitmq-service:5672
+      - INCOMING_QUEUE=attach-to-tangle
+      - CCURL_PATH=/opt
+    depends_on:
+      - rabbitmq
+
+  rabbitmq:
+    image: rabbitmq
+    ports:
+      - 5672:5672

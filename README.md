@@ -1,85 +1,78 @@
 # IOTA Sandbox
 
-## Installation
+## Development with docker:
 
-1. Follow the instructions to build [ccurl](https://github.com/iotaledger/ccurl), and put `build/lib/libccurl.so`
-   anywhere you like.
-1. Copy the `.env.template` file to `.env` and fill in the missing configuration parameters. `CCURL_PATH` is the path to
-   the folder containing `libccurl.so`.
+The easiest way to get up and running is with `docker-compose`:
 
-## Running for Local Development
+```
+docker-compose build && docker-compose up
+```
 
-Recommended:
+For development, it is easiest to run rabbitmq separately:
 
-* In VSCode, choose from the avaliable configurations.
+```
+docker-compose run -d -p 5672:5672 rabbitmq
+```
 
-Otherwise:
+Then use node directly to run the code, either with `npm run` (see `package.json` for details), or using one of the
+provided VSCode launch configurations.
 
-* Run `node src/worker/index.js` (currently only the worker node is available).
+## Testing in the production environment:
 
-## Running in local production environment
+This is a slightly more complicated setup, but allows for testing in the production environment from your local
+computer. These steps are available in `deploy/minikube-up.sh` if you don't want to run them manually.
 
 * Install [minikube](https://github.com/kubernetes/minikube)
-* Start minikube and allow it's docker engine to run as an insecure registry:
+* Start minikube and allow its docker engine to run as an insecure registry:
 
 ```
-$ minikube start --insecure-registry 192.168.99.100:5000
+minikube start --insecure-registry 192.168.99.100:5000
 ```
-
-* [Download](https://console.cloud.google.com/apis/credentials/serviceaccountkey) your Google Cloud credentials file
-  (click `Service account` > `New service account`)
-* Install the credentials as a secret in kubernetes:
-
-```
-$ kubectl create secret generic gcloud --from-file /path/to/gcloud-credentials.json
-```
-
-* Copy the environment file
-
-```
-$ mv .env.minikube .env
-```
-
-* Configure `.env` to match the name of the credentials file (`gcloud-credentials.json` above) and your project name.
 
 * Set your shell to use the minikube docker environment: (this step must be done any time you rebuild the docker image
   in a new shell)
 
 ```
-$ eval $(minikube docker-env)
+eval $(minikube docker-env)
 ```
 
-* Build the docker image:
+* Build the docker images:
 
 ```
-$ docker build -f Dockerfile.worker -t sandbox-worker:alpha .
+docker build -f Dockerfile.worker -t sandbox-worker:alpha .
+docker build -f Dockerfile.api -t sandbox-api:alpha .
 ```
 
-* Create the kubernetes deployment:
+* Create the kubernetes deployment and expose it to minikube:
 
 ```
-$ kubectl create -f sandbox.yml
+kubectl create -f deploy/rabbit-controller.yml
+kubectl create -f deploy/rabbit-service.yml
+kubectl create -f deploy/api.yml
+kubectl create -f deploy/worker.yml
+kubectl expose deployment sandbox-api --type="LoadBalancer" --port=3000
 ```
 
-* Test your deployment by sending the contents of `src/worker/sample.json` as a message via the Google Cloud Pub/Sub
-  console
+* Finally, get the sandbox API URL from minikube:
+
+```
+minikube service sandbox-api --url
+```
+
+* Test your deployment by using the included Postman collections
 * You should see the results in the container's logs:
 
 ```
-$ kubectl logs sandbox-js-XXXXXXXXXXX
+kubectl logs sandbox-js-XXXXXXXXXXX
 ```
 
 * Stop the deployment and/or shut down minikube
 
 ```
-$ kubectl delete deployment sandbox-js
-$ minikube stop
+sh deploy/minikube-down.sh
 ```
 
 ## Deploying for Production
 
-// TODO
-
-```
-
-```
+Build the docker images and push them to a remote container registry. Make sure `kubectl` is connected to your cloud
+kubernetes cluster, and run the `kubectl` commands as directed above.
