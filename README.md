@@ -8,10 +8,11 @@ The easiest way to get up and running is with `docker-compose`:
 docker-compose build && docker-compose up
 ```
 
-For development, it is easiest to run rabbitmq separately:
+For development, it is easiest to run rabbitmq & mongodb separately:
 
 ```
 docker-compose run -d -p 5672:5672 rabbitmq
+docker-compose run -d -p 27017:27017 mongodb
 ```
 
 Then use node directly to run the code, either with `npm run` (see `package.json` for details), or using one of the
