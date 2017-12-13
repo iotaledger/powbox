@@ -1,0 +1,27 @@
+---
+ apiVersion: extensions/v1beta1
+ kind: Deployment
+ metadata:
+   name: sandbox-api
+ spec:
+   replicas: 1
+   template:
+     metadata:
+       labels:
+         app: sandbox
+         component: api
+     spec:
+       containers:
+       - name: sandbox-api
+         image: sandbox-api:alpha
+         ports:
+         - containerPort: 3000
+         env:
+         - name: BROKER_URL
+           value: amqp://guest:guest@rabbitmq-service:5672
+         - name: INCOMING_QUEUE
+           value: attach-to-tangle
+         - name: IRI_HOST
+           value: https://nodes.iota.cafe
+         - name: IRI_PORT
+           value: "443"

@@ -1,0 +1,50 @@
+version: "3"
+services:
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    ports:
+      - 3000:3000
+    volumes:
+      - .:/app
+    links:
+      - rabbitmq:rabbitmq-service
+      - mongodb:mongodb-service
+    environment:
+      - AMQP_APP_ID=sandbox
+      - BROKER_URL=amqp://guest:guest@rabbitmq-service:5672
+      - INCOMING_QUEUE=attach-to-tangle
+      - MONGO_CONN=mongodb://localhost:27017/sandbox
+      - IRI_HOST=https://nodes.iota.cafe
+      - IRI_PORT=443
+    depends_on:
+      - rabbitmq
+      - mongodb
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+    volumes:
+      - .:/app
+    links:
+      - rabbitmq:rabbitmq-service
+      - mongodb:mongodb-service
+    environment:
+      - BROKER_URL=amqp://guest:guest@rabbitmq-service:5672
+      - INCOMING_QUEUE=attach-to-tangle
+      - CCURL_PATH=/opt
+    depends_on:
+      - api
+
+  rabbitmq:
+    image: rabbitmq
+    ports:
+      - 5672:5672
+
+  mongodb:
+    image: mongo
+    ports:
+      - 27017:27017
