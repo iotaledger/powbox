@@ -2,7 +2,7 @@ const amqp = require('amqplib');
 const IOTA = require('iota.lib.js');
 const uuid = require('uuid');
 
-const { createJob } = require('../common/db');
+const { job } = require('../common/db');
 const { asBuffer } = require('../common/utils');
 
 const iota = new IOTA({
@@ -19,7 +19,7 @@ const attachToTangle = async (req, callback) => {
     let messageId;
 
     try {
-        messageId = await createJob(JSON.stringify(req.body));
+        messageId = await job.create(JSON.stringify(req.body));
     } catch (e) {
         console.error(e);
 

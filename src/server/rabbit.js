@@ -1,6 +1,6 @@
 const amqp = require('amqplib');
 
-const { finishJob, updateJob } = require('../common/db');
+const { job } = require('../common/db');
 
 const { BROKER_URL, COMPLETED_QUEUE, PROGRESS_QUEUE } = process.env;
 
@@ -14,7 +14,7 @@ module.exports.listen = async () => {
     channel.consume(COMPLETED_QUEUE, async msg => {
         console.log(`[${COMPLETED_QUEUE}] received message ${msg.properties.messageId}`);
 
-        await finishJob(msg.properties.messageId, msg.content.toString());
+        await job.complete(msg.properties.messageId, msg.content.toString());
 
         channel.ack(msg);
     });
@@ -26,7 +26,7 @@ module.exports.listen = async () => {
     channel.consume(PROGRESS_QUEUE, async msg => {
         console.log(`[${PROGRESS_QUEUE}] received message ${msg.properties.messageId}`);
 
-        await updateJob(msg.properties.messageId, msg.content.toString());
+        await job.update(msg.properties.messageId, msg.content.toString());
 
         channel.ack(msg);
     });
