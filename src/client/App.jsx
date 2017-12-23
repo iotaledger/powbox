@@ -1,6 +1,6 @@
 import React from 'react';
 
-import Aux from './Aux';
+import Authenticate from './Authenticate';
 import Markdown from './Markdown';
 
 import appCss from './app.css';
@@ -22,6 +22,7 @@ export default class App extends React.Component {
                     {constants.introText}
                     {constants.authenticationText}
                     {constants.usageText}
+                    <Authenticate />
                     <ul className="library-list">
                         {libs.map(lib => (
                             <li className="library" key={lib.repo}>

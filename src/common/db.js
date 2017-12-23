@@ -7,6 +7,8 @@ mongoose.connect(process.env.MONGO_CONN, { useMongoClient: true });
 
 const db = mongoose.connection;
 
+module.exports.connection = db;
+
 db.once('open', () => {
     console.log('mongoose connected to ' + process.env.MONGO_CONN);
 });
