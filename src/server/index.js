@@ -4,6 +4,7 @@ const log = console.log;
 const express = require('express');
 const bodyParser = require('body-parser');
 const apiCommands = require('./commands');
+const mq = require('./rabbit');
 
 const app = express();
 
@@ -14,3 +15,5 @@ app.post('/api/v1/commands', apiCommands);
 app.listen(3000, () => {
     console.log('Listening on port 3000...');
 });
+
+mq.listen();

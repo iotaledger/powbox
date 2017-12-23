@@ -16,7 +16,17 @@ const attachToTangle = async (req, callback) => {
 
     const channel = await conn.createChannel();
 
-    const messageId = await createJob(JSON.stringify(req.body));
+    let messageId;
+
+    try {
+        messageId = await createJob(JSON.stringify(req.body));
+    } catch (e) {
+        console.error(e);
+
+        callback(e);
+
+        return;
+    }
 
     await channel.assertQueue(process.env.INCOMING_QUEUE);
 
@@ -25,7 +35,7 @@ const attachToTangle = async (req, callback) => {
         appId: process.env.AMQP_APP_ID
     });
 
-    callback(null, 'Sent message: ' + JSON.stringify(req.body));
+    callback(null, { jobId: messageId });
 };
 
 module.exports = (req, res) => {

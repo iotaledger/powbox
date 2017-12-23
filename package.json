@@ -24,7 +24,6 @@
         "@google-cloud/datastore": "^1.1.0",
         "@google-cloud/pubsub": "^0.15.0",
         "amqplib": "^0.5.2",
-        "bluebird": "^3.5.1",
         "body-parser": "^1.18.2",
         "ccurl.interface.js": "0.0.4",
         "dotenv": "^4.0.0",

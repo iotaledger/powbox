@@ -4,7 +4,18 @@ const amqp = require('amqplib');
 const ccurl = require('ccurl.interface.js');
 const { asBuffer, fromBuffer } = require('../common/utils');
 
-const { CCURL_PATH } = process.env;
+const { BROKER_URL, CCURL_PATH, COMPLETED_QUEUE, INCOMING_QUEUE, PROGRESS_QUEUE } = process.env;
+
+const publishJobProgress = (channel, msg) => async (err, res) => {
+    await channel.assertQueue(PROGRESS_QUEUE);
+
+    const progress = Math.floor(res * 100).toString();
+
+    return channel.sendToQueue(PROGRESS_QUEUE, asBuffer(progress), {
+        messageId: msg.properties.messageId,
+        appId: msg.properties.appId
+    });
+};
 
 const publishJobComplete = (channel, msg) => async (err, res) => {
     channel.ack(msg);
@@ -14,38 +25,33 @@ const publishJobComplete = (channel, msg) => async (err, res) => {
         throw err;
     }
 
-    await channel.assertQueue(process.env.COMPLETED_QUEUE);
+    await channel.assertQueue(COMPLETED_QUEUE);
 
-    return channel.sendToQueue(process.env.COMPLETED_QUEUE, asBuffer(res), {
+    return channel.sendToQueue(COMPLETED_QUEUE, asBuffer(res), {
         messageId: msg.properties.messageId,
         appId: msg.properties.appId
     });
 };
 
 async function listen() {
-    const conn = await amqp.connect(process.env.BROKER_URL);
-
+    const conn = await amqp.connect(BROKER_URL);
     const channel = await conn.createChannel();
 
-    await channel.assertQueue(process.env.INCOMING_QUEUE);
+    await channel.assertQueue(INCOMING_QUEUE);
 
-    console.log('Worker listening for messages on queue: ', process.env.INCOMING_QUEUE);
-
-    channel.consume(process.env.INCOMING_QUEUE, msg => {
+    channel.consume(INCOMING_QUEUE, msg => {
         const data = fromBuffer(msg.content);
 
-        console.log('Data received: ', data.trunkTransaction);
+        console.log(`[${INCOMING_QUEUE}] received message ${msg.properties.messageId}`);
 
         const { trunkTransaction, branchTransaction, minWeightMagnitude, trytes } = data;
         const job = ccurl(trunkTransaction, branchTransaction, minWeightMagnitude, trytes, CCURL_PATH);
 
-        function publishJobProgress(err, progress) {
-            console.log(progress);
-        }
-
-        job.on('progress', publishJobProgress);
+        job.on('progress', publishJobProgress(channel, msg));
         job.on('done', publishJobComplete(channel, msg));
     });
+
+    console.log(`[${INCOMING_QUEUE}] listening for messages`);
 }
 
 listen();
