@@ -17,11 +17,35 @@ const getAccessToken = code => {
 };
 
 const getUserEmail = accessToken => {
-    return fetch('https://api.github.com/user', {
+    return fetch('https://api.github.com/user/emails', {
         headers: {
             Authorization: `token ${accessToken}`
         }
-    }).then(res => res.json());
+    })
+        .then(res => res.json())
+        .then(res => {
+            if (res.error) {
+                return res;
+            }
+
+            const verifiedEmails = res.filter(each => each.verified);
+
+            if (verifiedEmails.length === 0) {
+                return {
+                    error: 'no_verified_emails',
+                    error_description:
+                        'You must have at least one verified email address registered with your GitHub account.'
+                };
+            }
+
+            const primaryEmail = verifiedEmails.filter(each => each.primary);
+
+            if (primaryEmail.length === 0) {
+                return verifiedEmails[0];
+            } else {
+                return primaryEmail[0];
+            }
+        });
 };
 
 module.exports = (req, res) => {
@@ -41,12 +65,17 @@ module.exports = (req, res) => {
 
             return getUserEmail(data.access_token);
         })
-        .then(user => {
-            if (user === null) {
+        .then(data => {
+            if (data === null) {
                 return;
             }
 
-            console.log(user);
+            if (data.error) {
+                res.status(400);
+                res.send(data.error_description);
+            }
+
+            console.log(data.email);
             res.sendStatus(201);
         });
 };

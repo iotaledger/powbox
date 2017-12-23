@@ -21,8 +21,8 @@ export default class App extends React.Component {
                 <Markdown>
                     {constants.introText}
                     {constants.authenticationText}
-                    {constants.usageText}
                     <Authenticate />
+                    {constants.usageText}
                     <ul className="library-list">
                         {libs.map(lib => (
                             <li className="library" key={lib.repo}>
