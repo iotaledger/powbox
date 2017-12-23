@@ -15,8 +15,7 @@ const jobSchema = mongoose.Schema(
     {
         request: String,
         response: String,
-        progress: String,
-        endTime: Number
+        progress: String
     },
     {
         timestamps: true
@@ -25,25 +24,51 @@ const jobSchema = mongoose.Schema(
 
 const Job = mongoose.model('Job', jobSchema);
 
-module.exports.createJob = async request => {
-    const job = new Job({
-        request,
-        progress: '0'
-    });
+module.exports.job = {
+    create: async request => {
+        const job = new Job({
+            request,
+            progress: '0'
+        });
 
-    await job.save();
+        await job.save();
 
-    return job.id;
+        return job.id;
+    },
+
+    get: async id => {
+        const job = await Job.findById(id);
+
+        return job;
+    },
+
+    update: async (_id, progress) => {
+        await Job.findOneAndUpdate({ _id }, { progress });
+    },
+
+    complete: async (_id, response) => {
+        await Job.findOneAndUpdate({ _id }, { progress: '100', response });
+    }
 };
 
-module.exports.updateJob = async (_id, progress) => {
-    await Job.findOneAndUpdate({ _id }, { progress });
+const rateLimiterSchema = mongoose.Schema(
+    {
+        ipAddress: String,
+        count: Number,
+        limit: Number,
+        lastRequest: Date,
+        firstRequest: Date,
+        expires: Date
+    },
+    {
+        collection: 'ratelimiter'
+    }
+);
 
-    return;
-};
+module.exports.RateLimiter = mongoose.model('RateLimit', rateLimiterSchema);
 
-module.exports.finishJob = async (_id, response) => {
-    await Job.findOneAndUpdate({ _id }, { progress: '100', response });
+module.exports.limit = async (ipAddress, token) => {
+    const data = await RateLimiter.findOne({ ipAddress });
 
-    return;
+    return false;
 };
