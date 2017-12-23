@@ -1,0 +1,88 @@
+:root {
+    --text-color: #333;
+    --link-blue: #0000ee;
+    --light-gray: #eee;
+}
+
+* {
+    font-family: Roboto;
+    color: var(--text-color);
+}
+
+h1,
+h2 {
+    font-weight: 300;
+}
+
+a {
+    text-decoration: none;
+    color: var(--text-color);
+}
+
+ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.marked a {
+    color: var(--link-blue);
+}
+
+.marked ul {
+    list-style-type: square;
+    padding-left: 32px;
+}
+
+.marked pre {
+    padding: 16px;
+    background-color: var(--light-gray);
+    overflow-x: auto;
+}
+
+.marked p > code {
+    background-color: var(--light-gray);
+}
+
+.app-container {
+    padding: 16px;
+    overflow-x: hidden;
+}
+
+@media (min-width: 768px) {
+    .app-container {
+        max-width: 768px;
+        margin: auto;
+    }
+}
+
+.library-list {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.library-list li {
+    border: 2px solid gray;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    margin: 16px;
+}
+
+.library-list a {
+    padding: 8px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    width: 100px;
+}
+
+.library-list a:hover {
+    background-color: rgba(0, 0, 1, 0.1);
+}
+
+.library i {
+    font-size: 36px;
+}
