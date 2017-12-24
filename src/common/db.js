@@ -13,6 +13,9 @@ db.once('open', () => {
     console.log('mongoose connected to ' + process.env.MONGO_CONN);
 });
 
+/**
+ * Jobs
+ */
 const jobSchema = mongoose.Schema(
     {
         request: String,
@@ -53,6 +56,9 @@ module.exports.job = {
     }
 };
 
+/**
+ * IP-based rate Limiter
+ */
 const rateLimiterSchema = mongoose.Schema(
     {
         ipAddress: String,
@@ -69,8 +75,19 @@ const rateLimiterSchema = mongoose.Schema(
 
 module.exports.RateLimiter = mongoose.model('RateLimit', rateLimiterSchema);
 
-module.exports.limit = async (ipAddress, token) => {
-    const data = await RateLimiter.findOne({ ipAddress });
+/**
+ * Token authentication
+ */
+const tokenSchema = mongoose.Schema(
+    {
+        count: Number,
+        githubId: String,
+        email: String,
+        apikey: String
+    },
+    {
+        timestamps: true
+    }
+);
 
-    return false;
-};
+module.exports.Token = mongoose.model('Token', tokenSchema);

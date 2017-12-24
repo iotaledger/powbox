@@ -1,19 +1,11 @@
 const moment = require('moment');
 
-const { RateLimiter } = require('../common/db');
+const { RateLimiter, Token } = require('../common/db');
+const { validateJwt } = require('./tokens');
 
 const errors = {
     RL01: 'Rate Limit exceeded. Please wait and try again',
     RL02: 'Invalid or expired token.'
-};
-
-// stub method to be replaced with database query
-const validateToken = async token => {
-    if (token === 'allow') {
-        return true;
-    }
-
-    return false;
 };
 
 const defaultRateLimiterOptions = {
@@ -72,7 +64,7 @@ module.exports = (options = defaultRateLimiterOptions) => {
 
     return async (req, res, next) => {
         if (req.headers.authorization) {
-            if (await validateToken(req.headers.authorization)) {
+            if (validateJwt(req.headers.authorization)) {
                 // Token is OK - proceed
                 return next();
             }

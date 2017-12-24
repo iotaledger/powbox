@@ -86,3 +86,26 @@ ul {
 .library i {
     font-size: 36px;
 }
+
+.authentication {
+    padding: 16px;
+    background-color: #eee;
+}
+
+.authentication .signin {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    border: none;
+    width: 240px;
+    background-color: #444;
+    color: white;
+    padding: 8px;
+    margin: auto;
+}
+
+.authentication .signin i {
+    font-size: 36px;
+    color: white;
+    margin-right: 8px;
+}
