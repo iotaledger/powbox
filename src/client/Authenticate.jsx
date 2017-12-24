@@ -55,9 +55,11 @@ export default class Authenticate extends React.Component {
 
         return (
             <div className="authentication">
-                <p>Signed in as {data.email}.</p>
-                <p>Your unique api key is:</p>
+                <p>Signed in as {data.email}. Your unique API Key:</p>
                 <pre>{this.state.apikey}</pre>
+                <p>
+                    Include your API Key in the <code>Authorization</code> header of all requests to the sandbox.
+                </p>
             </div>
         );
     }

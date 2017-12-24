@@ -17,8 +17,8 @@ export const authenticationText = `
 
 By default, the API is rate limited per IP address to 5 \`attachToTangle\` calls per minute.
 If this is not enough to support your development workflow, simply authenticate to the sandbox
-through GitHub to receive an API token. Including a valid API token with your requests will bypass
-the rate limiter.
+through GitHub below to receive an API token. Including a valid API token with your requests
+(in the \`Authorization\` HTTP header) will bypass the rate limiter.
 `;
 
 export const usageText = `
