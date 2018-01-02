@@ -5,6 +5,7 @@
     "main": "index.js",
     "repository": "git@gitlab.com:iota-foundation/software/sandbox.js.git",
     "scripts": {
+        "build": "webpack",
         "precommit": "lint-staged",
         "start:api": "node src/server/index.js",
         "start:worker": "node src/worker/index.js",

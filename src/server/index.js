@@ -29,7 +29,7 @@ app.use(
     session({
         resave: false,
         saveUninitialized: false,
-        secret: 'b17ae8ea-5932-4b58-8243-4c217fa25e19',
+        secret: process.env.SESSION_SECRET,
         store: new MongoStore({ mongooseConnection: connection })
     })
 );
