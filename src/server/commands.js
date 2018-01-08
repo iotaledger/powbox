@@ -1,6 +1,5 @@
 const amqp = require('amqplib');
 const IOTA = require('iota.lib.js');
-const uuid = require('uuid');
 
 const { job } = require('../common/db');
 const { asBuffer } = require('../common/utils');
@@ -31,7 +30,7 @@ const attachToTangle = async (req, callback) => {
     await channel.assertQueue(process.env.INCOMING_QUEUE);
 
     await channel.sendToQueue(process.env.INCOMING_QUEUE, asBuffer(req.body), {
-        messageId: messageId,
+        messageId,
         appId: process.env.AMQP_APP_ID
     });
 

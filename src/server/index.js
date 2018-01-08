@@ -16,7 +16,6 @@ const rateLimiter = require('./rateLimiter');
 
 const app = express();
 const csrfProtection = csrf({ cookie: false });
-const parseForm = bodyParser.urlencoded({ extended: false });
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.set('views', path.join(__dirname, 'views'));

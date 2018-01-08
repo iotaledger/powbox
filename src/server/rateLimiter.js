@@ -1,6 +1,6 @@
 const moment = require('moment');
 
-const { RateLimiter, Token } = require('../common/db');
+const { RateLimiter } = require('../common/db');
 const { validateJwt } = require('./tokens');
 
 const errors = {
@@ -85,6 +85,6 @@ module.exports = (options = defaultRateLimiterOptions) => {
         const code = 'RL01';
 
         res.status(401);
-        res.json({ code, message: errors[code] });
+        return res.json({ code, message: errors[code] });
     };
 };
