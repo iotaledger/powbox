@@ -15,8 +15,9 @@ docker-compose run -d -p 5672:5672 rabbitmq
 docker-compose run -d -p 27017:27017 mongodb
 ```
 
-Then use node directly to run the code, either with `npm run` (see `package.json` for details), or using one of the
-provided VSCode launch configurations.
+Copy the file `.env.template` to `.env`, and set the appropriate environment configuration variables. Then use node
+directly to run the code, either with `npm run` (see `package.json` for details), or using one of the provided VSCode
+launch configurations.
 
 ## Testing in the production environment:
 
@@ -77,3 +78,9 @@ sh deploy/minikube-down.sh
 
 Build the docker images and push them to a remote container registry. Make sure `kubectl` is connected to your cloud
 kubernetes cluster, and run the `kubectl` commands as directed above.
+
+For the front-end client (docs and GitHub OAuth tool), make sure you run the API process with the environment variable:
+
+```
+NODE_ENV=production
+```
