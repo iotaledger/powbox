@@ -2,6 +2,8 @@ import jwt from 'jsonwebtoken';
 import qs from 'query-string';
 import React from 'react';
 
+const { SANDBOX, location } = window;
+
 const GH_AUTH_URL = `https://github.com/login/oauth/authorize?${qs.stringify({
     client_id: SANDBOX.ghClientId,
     state: SANDBOX.csrfToken,
@@ -28,6 +30,15 @@ const handleGithubRedirect = async () => {
 
     return json.apikey;
 };
+
+const SignupButton = () => (
+    <div className="authentication">
+        <a className="signin" target="_blank" href={GH_AUTH_URL}>
+            <i className="devicon-github-plain" />
+            Grant access for API Key
+        </a>
+    </div>
+);
 
 export default class Authenticate extends React.Component {
     constructor() {
@@ -64,22 +75,11 @@ export default class Authenticate extends React.Component {
         );
     }
 
-    renderLoggedOut() {
-        return (
-            <div className="authentication">
-                <a className="signin" target="_blank" href={GH_AUTH_URL}>
-                    <i class="devicon-github-plain" />
-                    Grant access for API Key
-                </a>
-            </div>
-        );
-    }
-
     render() {
         if (this.state.apikey) {
             return this.renderLoggedIn();
         }
 
-        return this.renderLoggedOut();
+        return <SignupButton />;
     }
 }

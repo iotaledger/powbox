@@ -1,0 +1,11 @@
+{
+    "extends": ["airbnb", "prettier"],
+    "env": {
+        "browser": true,
+        "node": true
+    },
+    "rules": {
+        "no-console": 0,
+        "react/jsx-indent": 0
+    }
+}

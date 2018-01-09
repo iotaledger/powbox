@@ -3,7 +3,7 @@ const qs = require('query-string');
 
 const { createOrGetToken } = require('./tokens');
 
-const httpOk = res => 200 <= res.status && res.status < 300;
+const httpOk = res => res.status >= 200 && res.status < 300;
 
 const getAccessToken = async code => {
     const queryString = qs.stringify({
@@ -60,10 +60,7 @@ const getUserEmail = async accessToken => {
     const verifiedEmails = json.filter(each => each.verified);
 
     if (verifiedEmails.length === 0) {
-        throw {
-            error: 'no_verified_emails',
-            error_description: 'You must have at least one verified email address registered with your GitHub account.'
-        };
+        throw new Error('You must have at least one verified email address registered with your GitHub account.');
     }
 
     const primaryEmail = verifiedEmails.filter(each => each.primary)[0];
@@ -84,16 +81,16 @@ module.exports = async (req, res) => {
         const email = await getUserEmail(accessToken);
         const apikey = await createOrGetToken({ id, email });
 
-        res.status(200).json({ apikey });
+        return res.status(200).json({ apikey });
     } catch (e) {
         if (e.error) {
-            console.error(e.error + ': ' + e.error_description);
+            console.error(`${e.error}: ${e.error_description}`);
             res.status(400);
-            res.send(e.error_description);
-        } else {
-            console.error(e);
-            res.status(400);
-            res.send(e.message);
+            return res.send(e.error_description);
         }
+
+        console.error(e);
+        res.status(400);
+        return res.send(e.message);
     }
 };

@@ -1,5 +1,6 @@
 {
-    "name": "sandbox.node.js",
+    "name": "sandbox.js",
+    "private": true,
     "version": "1.0.0",
     "description": "",
     "main": "index.js",
@@ -9,7 +10,7 @@
         "precommit": "lint-staged",
         "start:api": "node src/server/index.js",
         "start:worker": "node src/worker/index.js",
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "test": "eslint --ext=js,jsx src"
     },
     "lint-staged": {
         "*.{js,json,css}": ["prettier --write", "git add"]
@@ -17,13 +18,17 @@
     "author": "",
     "license": "ISC",
     "devDependencies": {
+        "eslint": "^4.15.0",
+        "eslint-config-airbnb": "^16.1.0",
+        "eslint-plugin-import": "^2.8.0",
+        "eslint-plugin-jsx-a11y": "^6.0.3",
+        "eslint-config-prettier": "^2.9.0",
+        "eslint-plugin-react": "^7.5.1",
         "husky": "^0.14.3",
         "lint-staged": "^6.0.0",
         "prettier": "^1.8.2"
     },
     "dependencies": {
-        "@google-cloud/datastore": "^1.1.0",
-        "@google-cloud/pubsub": "^0.15.0",
         "amqplib": "^0.5.2",
         "babel-cli": "^6.26.0",
         "babel-loader": "^7.1.2",
@@ -51,6 +56,7 @@
         "node-fetch": "^1.7.3",
         "normalize.css": "^7.0.0",
         "optimist": "^0.6.1",
+        "prop-types": "^15.6.0",
         "query-string": "^5.0.1",
         "react": "^16.2.0",
         "react-dom": "^16.2.0",

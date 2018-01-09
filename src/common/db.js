@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const uuid = require('uuid');
 
 mongoose.Promise = global.Promise;
 
@@ -10,7 +9,7 @@ const db = mongoose.connection;
 module.exports.connection = db;
 
 db.once('open', () => {
-    console.log('mongoose connected to ' + process.env.MONGO_CONN);
+    console.log(`mongoose connected to ${process.env.MONGO_CONN}`);
 });
 
 /**
