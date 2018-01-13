@@ -37,11 +37,12 @@ app.post('/api/v1/commands', rateLimiter(), apiCommands);
 
 app.get('/api/v1/jobs/:jobId', async (req, res) => {
     try {
-        const j = (await job.get(req.params.jobId)).toJSON();
+        const jobData = await job.get(req.params.jobId);
+        const json = jobData.toJSON();
 
-        delete j.request;
+        delete json.request;
 
-        res.json(j);
+        res.json(json);
     } catch (e) {
         console.error(e);
 
@@ -60,6 +61,11 @@ app.get('*', csrfProtection, (req, res) => {
             ghClientId: process.env.GITHUB_APP_CLIENT_ID
         })
     });
+});
+
+app.use((err, req, res, next) => {
+    console.error('[sandbox api]', err);
+    res.sendStatus(500);
 });
 
 app.listen(3000, () => {
