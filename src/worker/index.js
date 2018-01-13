@@ -49,6 +49,7 @@ async function listen() {
 
         job.on('progress', publishJobProgress(channel, msg));
         job.on('done', publishJobComplete(channel, msg));
+        job.start();
     });
 
     console.log(`[${INCOMING_QUEUE}] listening for messages`);
