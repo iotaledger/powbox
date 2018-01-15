@@ -38,11 +38,13 @@ app.post('/api/v1/commands', rateLimiter(), apiCommands);
 app.get('/api/v1/jobs/:jobId', async (req, res) => {
     try {
         const jobData = await job.get(req.params.jobId);
-        const json = jobData.toJSON();
+        const { _id: id, createdAt, updatedAt, progress, response, error, errorMessage } = jobData.toJSON();
 
-        delete json.request;
-
-        res.json(json);
+        if (error) {
+            res.json({ id, createdAt, updatedAt, error, errorMessage });
+        } else {
+            res.json({ id, createdAt, updatedAt, progress, response });
+        }
     } catch (e) {
         console.error(e);
 
@@ -63,6 +65,7 @@ app.get('*', csrfProtection, (req, res) => {
     });
 });
 
+// eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
     console.error('[sandbox api]', err);
     res.sendStatus(500);

@@ -17,9 +17,11 @@ db.once('open', () => {
  */
 const jobSchema = mongoose.Schema(
     {
-        request: String,
-        response: String,
-        progress: String
+        request: Object,
+        response: Array,
+        progress: String,
+        error: Boolean,
+        errorMessage: String
     },
     {
         timestamps: true
@@ -32,7 +34,8 @@ module.exports.job = {
     create: async request => {
         const job = new Job({
             request,
-            progress: '0'
+            progress: '0',
+            error: false
         });
 
         await job.save();
@@ -52,6 +55,11 @@ module.exports.job = {
 
     complete: async (_id, response) => {
         await Job.findOneAndUpdate({ _id }, { progress: '100', response });
+    },
+
+    error: async (_id, message) => {
+        console.log('error: ', message);
+        await Job.findOneAndUpdate({ _id }, { error: true, errorMessage: message });
     }
 };
 
