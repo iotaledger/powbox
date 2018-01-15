@@ -38,7 +38,7 @@
         "babel-preset-env": "^1.6.1",
         "babel-preset-react": "^6.24.1",
         "body-parser": "^1.18.2",
-        "ccurl.interface.js": "anyong/ccurl.interface.js#27a3e5cae08cfc201afbc6b7b7ad1a12322da3ad",
+        "ccurl.interface.js": "iotaledger/ccurl.interface.js#5f7c926b35f412a3cd93032917eaedec0182bbca",
         "connect-mongo": "^2.0.0",
         "cookie-parser": "^1.4.3",
         "css-loader": "^0.28.7",
