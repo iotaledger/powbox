@@ -19,6 +19,11 @@ Copy the file `.env.template` to `.env`, and set the appropriate environment con
 directly to run the code, either with `npm run` (see `package.json` for details), or using one of the provided VSCode
 launch configurations.
 
+```
+DAEMON_MODE=true|false    # Set to true to prevent the worker from shutting down after finishing a job
+JOB_TIMEOUT=N             # Number of seconds to timeout a job, 0 = no timeout
+```
+
 ## Testing in the production environment:
 
 This is a slightly more complicated setup, but allows for testing in the production environment from your local
@@ -83,4 +88,8 @@ For the front-end client (docs and GitHub OAuth tool), make sure you run the API
 
 ```
 NODE_ENV=production
+```
+
+```
+
 ```
