@@ -12,9 +12,10 @@ const {
     INCOMING_QUEUE,
     PROGRESS_QUEUE,
     ERROR_QUEUE,
-    JOB_TIMEOUT
+    JOB_TIMEOUT,
+    DAEMON_MODE
 } = process.env;
-const DEFAULT_JOB_TIMEOUT = 300;
+const DEFAULT_JOB_TIMEOUT = '300';
 
 /**
  * LOGGING UTILITIES
@@ -56,6 +57,7 @@ const exitWithError = (name, jobId, error, exitCode) => {
     }
 
     log.error(note);
+
     process.exit(exitCode || 1);
 };
 
@@ -65,6 +67,10 @@ const exitWithSuccess = jobId => {
         name: infoCodes.COMPLETE,
         jobId
     });
+
+    if (DAEMON_MODE === 'true') {
+        return;
+    }
 
     process.exit(0);
 };
@@ -167,10 +173,13 @@ async function listen(timeout) {
         }
 
         channel.ack(msg);
-        setTimeout(publishTimeout(channel, timeout, jobId, appId), timeout * 1000);
+
+        if (timeout > 0) {
+            setTimeout(publishTimeout(channel, timeout, jobId, appId), timeout * 1000);
+        }
     });
 
     log.listen(INCOMING_QUEUE, `Timeout set to ${timeout} seconds`);
 }
 
-listen(JOB_TIMEOUT || DEFAULT_JOB_TIMEOUT);
+listen(parseInt(JOB_TIMEOUT || DEFAULT_JOB_TIMEOUT, 10));
