@@ -1,0 +1,61 @@
+---
+ apiVersion: extensions/v1beta1
+ kind: Deployment
+ metadata:
+   name: sandbox
+ spec:
+   replicas: 1
+   template:
+     metadata:
+       labels:
+         app: sandbox
+         component: api
+     spec:
+       containers:
+       - name: sandbox
+         image: eu.gcr.io/infra-iota/sandbox-api:783efcf0-1
+         resources:
+           limits:
+             cpu: "100m"
+             memory: "128M"
+         ports:
+         - containerPort: 3000
+         env:
+         - name: BROKER_URL
+           value: amqp://guest:guest@rabbitmq-service:5672
+         - name: INCOMING_QUEUE
+           value: attach-request
+         - name: COMPLETED_QUEUE
+           value: attach-complete
+         - name: PROGRESS_QUEUE
+           value: attach-progress
+         - name: ERROR_QUEUE
+           value: attach-error
+         - name: IRI_HOST
+           value: https://nodes.iota.cafe
+         - name: IRI_PORT
+           value: "443"
+         - name: MONGO_CONN
+           value: mongodb://mongo-service:27017/sandbox
+         - name: GITHUB_APP_CLIENT_SECRET
+           valueFrom:
+             secretKeyRef:
+             name: github-app-client-secret
+         - name: GITHUB_APP_CLIENT_ID
+           valueFrom:
+             secretKeyRef:
+             name: github-app-client-id
+         - name: API_SECRET
+           valueFrom:
+             secretKeyRef:
+             name: sandbox-secrets
+             value: api-secret
+         - name: SESSION_SECRET
+           valueFrom:
+             secretKeyRef:
+             name: sandbox-secrets
+             value: session-secret
+         - name: DAEMON_MODE
+           value: true
+         - name: NODE_ENV
+           value: production

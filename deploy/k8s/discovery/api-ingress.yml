@@ -1,0 +1,21 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: api-ingress
+  annotations:
+    kubernetes.io/tls-acme: "true"
+    kubernetes.io/ingress.class: "gce"
+    kubernetes.io/ingress.global-static-ip-name: sandbox-iota-org-sandbox-ext-ip
+spec:
+  tls:
+  - hosts:
+    - sandbox.iota.org
+    secretName: sandbox.iota.org-tls
+  rules:
+  - host: sandbox.iota.org
+    http:
+      paths:
+      - path: /*
+        backend:
+          serviceName: sandbox-service
+          servicePort: 3000
