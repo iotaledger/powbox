@@ -2,15 +2,22 @@ const amqp = require('amqplib');
 const IOTA = require('iota.lib.js');
 
 const { job } = require('../common/db');
+const log = require('../common/logging');
 const { asBuffer } = require('../common/utils');
 
+const { INCOMING_QUEUE, MWM_LIMIT } = process.env;
+
 const iota = new IOTA({
-    host: process.env.IRI_HOST,
-    port: process.env.IRI_PORT,
+    provider: process.env.IRI_URL,
     sandbox: true
 });
 
 const attachToTangle = async (req, callback) => {
+    if (req.body.minWeightMagnitude > MWM_LIMIT) {
+        callback(new Error(`Error: 'minWeightMagnitude' exceeds limit of ${MWM_LIMIT}`));
+        return;
+    }
+
     const conn = await amqp.connect(process.env.BROKER_URL);
 
     const channel = await conn.createChannel();
@@ -27,11 +34,17 @@ const attachToTangle = async (req, callback) => {
         return;
     }
 
-    await channel.assertQueue(process.env.INCOMING_QUEUE);
+    await channel.assertQueue(INCOMING_QUEUE);
 
-    await channel.sendToQueue(process.env.INCOMING_QUEUE, asBuffer(req.body), {
+    await channel.sendToQueue(INCOMING_QUEUE, asBuffer(req.body), {
         messageId,
         appId: process.env.AMQP_APP_ID
+    });
+
+    log.info({
+        queue: INCOMING_QUEUE,
+        name: 'job-request-ok',
+        jobId: messageId
     });
 
     callback(null, { jobId: messageId });
@@ -49,6 +62,8 @@ module.exports = (req, res) => {
             res.json(result);
         }
     };
+
+    log.info(req.body);
 
     switch (command) {
         case 'getNodeInfo':
