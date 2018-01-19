@@ -19,8 +19,8 @@ spec:
           name: mongo
           resources:
             limits:
-              cpu: "50m"
-              memory: "64M"
+              cpu: "200m"
+              memory: "256M"
           ports:
             - containerPort: 27017
               name: mongo

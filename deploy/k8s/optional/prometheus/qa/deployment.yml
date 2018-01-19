@@ -18,16 +18,15 @@ spec:
       - name: prometheus
         image: prom/prometheus:v1.8.2
         args:
-          - '-storage.local.retention=6m'
-          - '-storage.local.memory-chunks=50000'
+          - '-storage.local.memory-chunks=500000'
           - '-config.file=/etc/prometheus/prometheus.yaml'
         ports:
         - name: webui
           containerPort: 9090
         resources:
           limits:
-            cpu: 200m
-            memory: 384M
+            cpu: 500m
+            memory: 700M
         volumeMounts:
         - name: config-volume
           mountPath: /etc/prometheus
@@ -39,5 +38,5 @@ spec:
           name: prometheus-core
       - name: prometheus-persistent-storage
         gcePersistentDisk:
-          pdName: sandbox-iota-org-k8s-prometheus-persistent
+          pdName: qa-sandbox-iota-org-k8s-prometheus-persistent
           fsType: ext4

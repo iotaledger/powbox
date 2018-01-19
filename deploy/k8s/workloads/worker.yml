@@ -18,10 +18,9 @@ spec:
       - name: c
         image: eu.gcr.io/infra-iota/sandbox-worker:783efcf0-1 
         resources:
-          requests:
-            cpu: "125m"
           limits:
             cpu: "125m"
+            memory: "128M"
         env:
         - name: BROKER_URL
           value: amqp://guest:guest@rabbitmq-service:5672

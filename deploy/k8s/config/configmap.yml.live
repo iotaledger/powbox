@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sandbox-config
+data:
+  iri-node: "https://nodes.iota.cafe:443"
+  iri-port: "443"

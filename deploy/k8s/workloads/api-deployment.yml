@@ -16,8 +16,8 @@
          image: eu.gcr.io/infra-iota/sandbox-api:783efcf0-1
          resources:
            limits:
-             cpu: "100m"
-             memory: "128M"
+             cpu: "175m"
+             memory: "256M"
          ports:
          - containerPort: 3000
          env:
@@ -32,30 +32,38 @@
          - name: ERROR_QUEUE
            value: attach-error
          - name: IRI_HOST
-           value: https://nodes.iota.cafe
+           valueFrom:
+             configMapKeyRef:
+               name: sandbox-config
+               key: iri-node
          - name: IRI_PORT
-           value: "443"
+           valueFrom:
+             configMapKeyRef:
+               name: sandbox-config
+               key: iri-port
          - name: MONGO_CONN
            value: mongodb://mongo-service:27017/sandbox
          - name: GITHUB_APP_CLIENT_SECRET
            valueFrom:
              secretKeyRef:
-             name: github-app-client-secret
+               name: sandbox-secrets
+               key: github-app-client-secret
          - name: GITHUB_APP_CLIENT_ID
            valueFrom:
              secretKeyRef:
-             name: github-app-client-id
+               name: sandbox-secrets
+               key: github-app-client-id
          - name: API_SECRET
            valueFrom:
              secretKeyRef:
-             name: sandbox-secrets
-             value: api-secret
+               name: sandbox-secrets
+               key: api-secret
          - name: SESSION_SECRET
            valueFrom:
              secretKeyRef:
-             name: sandbox-secrets
-             value: session-secret
+               name: sandbox-secrets
+               key: session-secret
          - name: DAEMON_MODE
-           value: true
+           value: "true"
          - name: NODE_ENV
            value: production
