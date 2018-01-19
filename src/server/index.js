@@ -60,7 +60,7 @@ app.get('*', csrfProtection, (req, res) => {
         bundleUrl: process.env.NODE_ENV === 'production' ? 'sandbox.js' : 'http://localhost:9000/sandbox.js',
         options: JSON.stringify({
             csrfToken: req.csrfToken(),
-            ghClientId: process.env.GITHUB_APP_CLIENT_ID
+            ghClientId: process.env.GITHUB_APP_CLIENT_ID.trim()
         })
     });
 });
