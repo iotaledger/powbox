@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: c
-        image: eu.gcr.io/infra-iota/sandbox-worker:783efcf0-1 
+        image: eu.gcr.io/infra-iota/sandbox-worker:8268c07f-3
         resources:
           limits:
             cpu: "125m"
