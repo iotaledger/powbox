@@ -3,5 +3,4 @@ kind: ConfigMap
 metadata:
   name: sandbox-config
 data:
-  iri-node: "https://nodes.iota.cafe:443"
-  iri-port: "443"
+  iri-url: "https://nodes.iota.cafe:443"

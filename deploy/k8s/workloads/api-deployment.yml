@@ -31,16 +31,11 @@
            value: attach-progress
          - name: ERROR_QUEUE
            value: attach-error
-         - name: IRI_HOST
+         - name: IRI_URL
            valueFrom:
              configMapKeyRef:
                name: sandbox-config
-               key: iri-node
-         - name: IRI_PORT
-           valueFrom:
-             configMapKeyRef:
-               name: sandbox-config
-               key: iri-port
+               key: iri-url
          - name: MONGO_CONN
            value: mongodb://mongo-service:27017/sandbox
          - name: GITHUB_APP_CLIENT_SECRET

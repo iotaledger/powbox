@@ -3,5 +3,4 @@ kind: ConfigMap
 metadata:
   name: sandbox-config
 data:
-  iri-node: "http://store.alon-e.com"
-  iri-port: "14700"
+  iri-url: "http://store.alon-e.com:14700"
