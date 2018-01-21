@@ -26,6 +26,10 @@ const handleGithubRedirect = async () => {
         }
     });
 
+    if (!res.ok) {
+        throw new Error(res.statusText);
+    }
+
     const json = await res.json();
 
     return json.apikey;
@@ -40,11 +44,22 @@ const SignupButton = () => (
     </div>
 );
 
+const AuthError = () => (
+    <div className="authentication">
+        <p>
+            There seems to be a problem linking your GitHub account. If you have previously authorized the IOTA Sandbox
+            application, please <a href="https://github.com/settings/applications">revoke access</a>
+            and try again.
+        </p>
+    </div>
+);
+
 export default class Authenticate extends React.Component {
     constructor() {
         super();
         this.state = {
-            apikey: null
+            apikey: null,
+            error: false
         };
     }
 
@@ -57,7 +72,10 @@ export default class Authenticate extends React.Component {
                 apikey
             }));
         } catch (e) {
-            // ignore
+            this.setState(state => ({
+                ...state,
+                error: true
+            }));
         }
     }
 
@@ -78,6 +96,8 @@ export default class Authenticate extends React.Component {
     render() {
         if (this.state.apikey) {
             return this.renderLoggedIn();
+        } else if (this.state.error) {
+            return <AuthError />;
         }
 
         return <SignupButton />;

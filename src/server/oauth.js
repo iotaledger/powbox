@@ -76,7 +76,15 @@ module.exports = async (req, res) => {
     }
 
     try {
-        const accessToken = await getAccessToken(githubToken);
+        let accessToken;
+
+        if (req.session.githubAccessToken) {
+            accessToken = req.session.githubAccessToken;
+        } else {
+            accessToken = await getAccessToken(githubToken);
+            req.session.githubAccessToken = accessToken;
+        }
+
         const id = await getUserId(accessToken);
         const email = await getUserEmail(accessToken);
         const apikey = await createOrGetToken({ id, email });
