@@ -13,7 +13,7 @@
      spec:
        containers:
        - name: sandbox
-         image: eu.gcr.io/infra-iota/sandbox-api:8268c07f-3
+         image: sandbox-api:release
          resources:
            limits:
              cpu: "175m"

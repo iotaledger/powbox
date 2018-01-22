@@ -15,8 +15,8 @@ spec:
         app: attach-to-tangle
     spec:
       containers:
-      - name: c
-        image: eu.gcr.io/infra-iota/sandbox-worker:8268c07f-3
+      - name: worker
+        image: sandbox-worker:release
         resources:
           limits:
             cpu: "125m"
