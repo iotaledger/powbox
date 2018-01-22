@@ -41,7 +41,7 @@ module.exports.listen = async () => {
 
         logComplete(jobId);
 
-        await job.complete(jobId, JSON.parse(msg.content.toString()));
+        await job.complete(jobId, { trytes: JSON.parse(msg.content.toString()) });
 
         channel.ack(msg);
     });
