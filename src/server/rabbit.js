@@ -15,6 +15,24 @@ const logProgress = (jobId, progress) =>
     });
 const logError = (jobId, message) => log.error({ queue: ERROR_QUEUE, name: 'job-error', jobId, message });
 
+module.exports.middleware = () => {
+    let conn;
+    let channel;
+
+    amqp.connect(process.env.BROKER_URL).then(mqConn => {
+        conn = mqConn;
+        conn.createChannel().then(mqChan => {
+            channel = mqChan;
+            console.info('[api] Rabbit connection ready');
+        });
+    });
+
+    return (req, res, next) => {
+        req.rabbit = { conn, channel };
+        next();
+    };
+};
+
 module.exports.listen = async () => {
     const conn = await amqp.connect(BROKER_URL);
 
