@@ -1,0 +1,44 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: attach-to-tangle
+  labels:
+    app: attach-to-tangle
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: attach-to-tangle
+  template:
+    metadata:
+      labels:
+        app: attach-to-tangle
+    spec:
+      containers:
+      - name: worker
+        image: sandbox-worker:release
+        resources:
+          limits:
+            cpu: "125m"
+            memory: "128M"
+        env:
+        - name: BROKER_URL
+          value: amqp://guest:guest@rabbitmq-service:5672
+        - name: CCURL_PATH
+          value: /opt
+        - name: INCOMING_QUEUE
+          value: attach-request
+        - name: COMPLETED_QUEUE
+          value: attach-complete
+        - name: PROGRESS_QUEUE
+          value: attach-progress
+        - name: PROGRESS_QUEUE
+          value: attach-progress
+        - name: ERROR_QUEUE
+          value: attach-error
+        - name: JOB_TIMEOUT
+          value: 300
+      restartPolicy: OnFailure
+      volumes:
+      - name: sandbox-config
+        emptyDir:

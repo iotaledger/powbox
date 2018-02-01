@@ -43,11 +43,11 @@ minikube start --insecure-registry 192.168.99.100:5000
 eval $(minikube docker-env)
 ```
 
-* Build the docker images:
+* Build the docker images (pick the worker image betwen two Dockerfiles, alpine for a small sized image or debian to get NVIDIA GPU support via OpenCL):
 
 ```
-docker build -f Dockerfile.worker -t sandbox-worker:alpha .
-docker build -f Dockerfile.api -t sandbox-api:alpha .
+docker build -f Dockerfile.worker-{alpine,debian} -t sandbox-worker:release .
+docker build -f Dockerfile.api -t sandbox-api:release .
 ```
 
 * Create the kubernetes deployment and expose it to minikube:
