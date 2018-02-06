@@ -9,10 +9,10 @@ metadata:
 spec:
   tls:
   - hosts:
-    - sandbox.iota.org
-    secretName: sandbox.iota.org-tls
+    - sandbox.testnet.iota.org
+    secretName: sandbox.testnet.iota.org-tls
   rules:
-  - host: sandbox.iota.org
+  - host: sandbox.testnet.iota.org
     http:
       paths:
       - path: /*

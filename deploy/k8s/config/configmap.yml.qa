@@ -1,6 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: sandbox-config
-data:
-  iri-url: "http://store.alon-e.com:14700"
