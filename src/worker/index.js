@@ -167,7 +167,7 @@ async function listen(timeout) {
             job.on('done', publishJobComplete(channel, msg));
             job.start();
         } catch (err) {
-            channel.nack(msg);
+            channel.nack(msg, false, false);
             exitWithError(errorCodes.RECEIVED, jobId, err);
             return;
         }
