@@ -18,7 +18,7 @@ db.once('open', () => {
 const jobSchema = mongoose.Schema(
     {
         request: Object,
-        response: Array,
+        response: Object,
         progress: String,
         error: Boolean,
         errorMessage: String
