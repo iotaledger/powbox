@@ -106,9 +106,14 @@ const publishJobComplete = (channel, msg) => async (err, res) => {
     const jobId = msg.properties.messageId;
 
     if (err) {
-        exitWithError(errorCodes.COMPLETE, jobId, err);
+        channel.nack(msg, false, false);
+        channel.waitForConfirms().then(() => {
+            exitWithError(errorCodes.COMPLETE, jobId, err);
+        });
         return;
     }
+
+    channel.ack(msg);
 
     await channel.assertQueue(COMPLETED_QUEUE);
 
@@ -123,8 +128,10 @@ const publishJobComplete = (channel, msg) => async (err, res) => {
     );
 };
 
-const publishTimeout = (channel, timeout, jobId, appId) => async () => {
+const publishTimeout = (channel, msg, timeout, jobId, appId) => async () => {
     const errorMessage = `Job timed out after ${timeout} seconds`;
+
+    channel.nack(msg, false, false);
 
     await channel.assertQueue(ERROR_QUEUE);
 
@@ -168,14 +175,14 @@ async function listen(timeout) {
             job.start();
         } catch (err) {
             channel.nack(msg, false, false);
-            exitWithError(errorCodes.RECEIVED, jobId, err);
+            channel.waitForConfirms().then(() => {
+                exitWithError(errorCodes.RECEIVED, jobId, err);
+            });
             return;
         }
 
-        channel.ack(msg);
-
         if (timeout > 0) {
-            setTimeout(publishTimeout(channel, timeout, jobId, appId), timeout * 1000);
+            setTimeout(publishTimeout(channel, msg, timeout, jobId, appId), timeout * 1000);
         }
     });
 
