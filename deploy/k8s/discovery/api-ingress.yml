@@ -5,7 +5,7 @@ metadata:
   annotations:
     kubernetes.io/tls-acme: "true"
     kubernetes.io/ingress.class: "gce"
-    kubernetes.io/ingress.global-static-ip-name: sandbox-iota-org-sandbox-ext-ip
+    kubernetes.io/ingress.global-static-ip-name: powbox-iota-org-sandbox-ext-ip
 spec:
   tls:
   - hosts:
