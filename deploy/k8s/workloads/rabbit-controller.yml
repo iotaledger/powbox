@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    component: rabbitmq
+  name: rabbitmq-controller
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: taskQueue
+        component: rabbitmq
+    spec:
+      containers:
+      - image: rabbitmq:3.6.14-management-alpine
+        name: rabbitmq
+        resources:
+          limits:
+            cpu: "200m"
+            memory: "256M"
+        ports:
+        - containerPort: 5672
+          name: service
+        - containerPort: 15672
+          name: management
+      - image: kbudde/rabbitmq-exporter
+        name: rabbitmq-exporter
+        ports:
+        - containerPort: 9090
+          name: exporter
+        resources:
+          limits:
+            cpu: "50m"
+            memory: "64M"
