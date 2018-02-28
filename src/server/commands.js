@@ -18,9 +18,7 @@ const attachToTangle = async (req, callback) => {
         return;
     }
 
-    const conn = await amqp.connect(process.env.BROKER_URL);
-
-    const channel = await conn.createChannel();
+    const { channel } = req.rabbit;
 
     let messageId;
 

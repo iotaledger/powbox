@@ -102,13 +102,35 @@ const publishJobProgress = (channel, msg) => async (err, res) => {
     );
 };
 
+const publishError = async (channel, msg, err, errorCode = errorCodes.COMPLETE) => {
+    const { appId, messageId } = msg.properties;
+
+    channel.nack(msg, false, false);
+
+    await channel.assertQueue(ERROR_QUEUE);
+
+    return channel.sendToQueue(
+        ERROR_QUEUE,
+        Buffer.from(err.message),
+        {
+            appId,
+            messageId
+        },
+        () => {
+            exitWithError(errorCode, messageId, err, 2);
+        }
+    );
+};
+
 const publishJobComplete = (channel, msg) => async (err, res) => {
     const jobId = msg.properties.messageId;
 
     if (err) {
-        exitWithError(errorCodes.COMPLETE, jobId, err);
+        publishError(channel, msg, err);
         return;
     }
+
+    channel.ack(msg);
 
     await channel.assertQueue(COMPLETED_QUEUE);
 
@@ -120,24 +142,6 @@ const publishJobComplete = (channel, msg) => async (err, res) => {
             appId: msg.properties.appId
         },
         () => exitWithSuccess(jobId)
-    );
-};
-
-const publishTimeout = (channel, timeout, jobId, appId) => async () => {
-    const errorMessage = `Job timed out after ${timeout} seconds`;
-
-    await channel.assertQueue(ERROR_QUEUE);
-
-    channel.sendToQueue(
-        ERROR_QUEUE,
-        Buffer.from(errorMessage),
-        {
-            messageId: jobId,
-            appId
-        },
-        () => {
-            exitWithError(errorCodes.TIMEOUT, jobId, errorMessage, 2);
-        }
     );
 };
 
@@ -154,9 +158,7 @@ async function listen(timeout) {
     await channel.assertQueue(INCOMING_QUEUE);
 
     channel.consume(INCOMING_QUEUE, msg => {
-        const { appId, messageId: jobId } = msg.properties;
-
-        logInfo(jobId, infoCodes.RECEIVED);
+        logInfo(msg.properties.messageId, infoCodes.RECEIVED);
 
         try {
             const data = fromBuffer(msg.content);
@@ -167,15 +169,15 @@ async function listen(timeout) {
             job.on('done', publishJobComplete(channel, msg));
             job.start();
         } catch (err) {
-            channel.nack(msg);
-            exitWithError(errorCodes.RECEIVED, jobId, err);
+            publishError(channel, msg, err);
             return;
         }
 
-        channel.ack(msg);
-
         if (timeout > 0) {
-            setTimeout(publishTimeout(channel, timeout, jobId, appId), timeout * 1000);
+            setTimeout(
+                () => publishError(channel, msg, new Error(`Job timed out after ${timeout} seconds`)),
+                timeout * 1000
+            );
         }
     });
 

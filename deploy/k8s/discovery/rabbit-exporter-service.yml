@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: rabbitmq-exporter
+  labels:
+    name: rabbitmq-exporter
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "9090"
+spec:
+  ports:
+    - port: 9090
+      name: exporter
+      targetPort: exporter
+      protocol: TCP
+  selector:
+    app: taskQueue
+    component: rabbitmq

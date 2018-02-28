@@ -1,0 +1,42 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: prometheus-core
+  labels:
+    app: prometheus
+    component: core
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: prometheus-main
+      labels:
+        app: prometheus
+        component: core
+    spec:
+      containers:
+      - name: prometheus
+        image: prom/prometheus:v1.8.2
+        args:
+          - '-storage.local.memory-chunks=500000'
+          - '-config.file=/etc/prometheus/prometheus.yaml'
+        ports:
+        - name: webui
+          containerPort: 9090
+        resources:
+          limits:
+            cpu: 500m
+            memory: 700M
+        volumeMounts:
+        - name: config-volume
+          mountPath: /etc/prometheus
+        - name: prometheus-persistent-storage
+          mountPath: /prometheus
+      volumes:
+      - name: config-volume
+        configMap:
+          name: prometheus-core
+      - name: prometheus-persistent-storage
+        gcePersistentDisk:
+          pdName: qa-sandbox-iota-org-k8s-prometheus-persistent
+          fsType: ext4

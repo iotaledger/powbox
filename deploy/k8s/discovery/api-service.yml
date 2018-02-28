@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: sandbox-service
+spec:
+  ports:
+  - port: 3000
+    protocol: TCP
+  type: NodePort
+  selector:
+    app: sandbox
