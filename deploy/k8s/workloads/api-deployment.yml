@@ -36,6 +36,11 @@
              configMapKeyRef:
                name: sandbox-config
                key: iri-url
+         - name: MWM_LIMIT
+           valueFrom:
+             configMapKeyRef:
+               name: sandbox-config
+               key: mwm-limit
          - name: MONGO_CONN
            value: mongodb://mongo-service:27017/sandbox
          - name: GITHUB_APP_CLIENT_SECRET

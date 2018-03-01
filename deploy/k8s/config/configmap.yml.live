@@ -4,3 +4,4 @@ metadata:
   name: sandbox-config
 data:
   iri-url: "https://nodes.testnet.iota.org:443"
+  mwm-limit: "9"
