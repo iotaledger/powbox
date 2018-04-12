@@ -1,6 +1,7 @@
 require('../common/env');
 
 const bodyParser = require('body-parser');
+const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const csrf = require('csurf');
 const express = require('express');
@@ -17,6 +18,7 @@ const rateLimiter = require('./rateLimiter');
 const app = express();
 const csrfProtection = csrf({ cookie: false });
 
+app.use(cors());
 app.use(express.static(path.join(__dirname, 'public')));
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
