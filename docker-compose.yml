@@ -39,6 +39,7 @@ services:
       - COMPLETED_QUEUE=attach-complete
       - UPDATE_QUEUE=attach-progress
       - CCURL_PATH=/opt
+      - DAEMON_MODE=true
     depends_on:
       - api
 
