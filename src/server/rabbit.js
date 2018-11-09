@@ -15,28 +15,25 @@ const logProgress = (jobId, progress) =>
     });
 const logError = (jobId, message) => log.error({ queue: ERROR_QUEUE, name: 'job-error', jobId, message });
 
-module.exports.middleware = () => {
-    let conn;
-    let channel;
-
-    amqp.connect(process.env.BROKER_URL).then(mqConn => {
-        conn = mqConn;
-        conn.createChannel().then(mqChan => {
-            channel = mqChan;
-            console.info('[api] Rabbit connection ready');
-        });
+const connectToRabbit = async () =>
+    amqp.connect(BROKER_URL).catch(() => {
+        console.log('Failed to connect rabbit mq, retry in 5 seconds');
+        return new Promise((resolve) => {
+            setTimeout(resolve, 5000);
+        }).then(() => connectToRabbit());
     });
 
-    return (req, res, next) => {
-        req.rabbit = { conn, channel };
-        next();
-    };
-};
+const connect = connectToRabbit().then(conn =>
+    conn.createChannel().then(channel => {
+        console.info('[api] Rabbit connection ready');
+        return { conn, channel };
+    })
+);
+
+module.exports.connect = connect;
 
 module.exports.listen = async () => {
-    const conn = await amqp.connect(BROKER_URL);
-
-    const channel = await conn.createChannel();
+    const { channel } = await connect;
 
     await channel.assertQueue(PROGRESS_QUEUE);
 

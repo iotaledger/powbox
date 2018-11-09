@@ -9,18 +9,19 @@ services:
       - 3000:3000
     volumes:
       - .:/app
-    links:
-      - rabbitmq:rabbitmq-service
-      - mongodb:mongodb-service
+      - app-node-modules:/app/node_modules
     environment:
       - AMQP_APP_ID=sandbox
-      - BROKER_URL=amqp://guest:guest@rabbitmq-service:5672
+      - BROKER_URL=amqp://guest:guest@rabbitmq:5672
       - INCOMING_QUEUE=attach-to-tangle
       - COMPLETED_QUEUE=attach-complete
       - UPDATE_QUEUE=attach-progress
-      - MONGO_CONN=mongodb://localhost:27017/sandbox
-      - IRI_HOST=https://nodes.iota.cafe
+      - MONGO_CONN=mongodb://mongodb:27017/sandbox
+      - IRI_HOST=https://nodes.devnet.iota.org
       - IRI_PORT=443
+      - MWM_LIMIT=9
+      - NODE_ENV=development
+      - SESSION_SECRET=PutTheRandomSecreteHere
     depends_on:
       - rabbitmq
       - mongodb
@@ -28,14 +29,12 @@ services:
   worker:
     build:
       context: .
-      dockerfile: Dockerfile.worker
+      dockerfile: Dockerfile.worker-debian
     volumes:
       - .:/app
-    links:
-      - rabbitmq:rabbitmq-service
-      - mongodb:mongodb-service
+      - worker-node-modules:/app/node_modules
     environment:
-      - BROKER_URL=amqp://guest:guest@rabbitmq-service:5672
+      - BROKER_URL=amqp://guest:guest@rabbitmq:5672
       - INCOMING_QUEUE=attach-to-tangle
       - COMPLETED_QUEUE=attach-complete
       - UPDATE_QUEUE=attach-progress
@@ -52,3 +51,7 @@ services:
     image: mongo
     ports:
       - 27017:27017
+
+volumes:
+  app-node-modules:
+  worker-node-modules:

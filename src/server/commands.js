@@ -1,7 +1,7 @@
-const amqp = require('amqplib');
 const IOTA = require('iota.lib.js');
 
 const { job } = require('../common/db');
+const { connect } = require('./rabbit');
 const log = require('../common/logging');
 const { asBuffer } = require('../common/utils');
 
@@ -18,7 +18,7 @@ const attachToTangle = async (req, callback) => {
         return;
     }
 
-    const { channel } = req.rabbit;
+    const { channel } = await connect;
 
     let messageId;
 
