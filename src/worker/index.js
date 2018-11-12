@@ -157,6 +157,10 @@ async function listen(timeout) {
 
     await channel.assertQueue(INCOMING_QUEUE);
 
+    channel.on('error', () => {
+        listen(timeout);
+    });
+
     channel.consume(INCOMING_QUEUE, msg => {
         logInfo(msg.properties.messageId, infoCodes.RECEIVED);
 
