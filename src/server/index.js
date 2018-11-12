@@ -35,8 +35,6 @@ app.use(
     })
 );
 
-app.use(mq.middleware());
-
 app.post('/api/v1/commands', rateLimiter(), apiCommands);
 
 app.get('/api/v1/jobs/:jobId', async (req, res) => {

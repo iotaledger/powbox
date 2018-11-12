@@ -157,6 +157,10 @@ async function listen(timeout) {
 
     await channel.assertQueue(INCOMING_QUEUE);
 
+    channel.on('error', () => {
+        listen(timeout);
+    });
+
     channel.consume(INCOMING_QUEUE, msg => {
         logInfo(msg.properties.messageId, infoCodes.RECEIVED);
 
@@ -184,4 +188,12 @@ async function listen(timeout) {
     log.listen(INCOMING_QUEUE, `Timeout set to ${timeout} seconds`);
 }
 
-listen(parseInt(JOB_TIMEOUT || DEFAULT_JOB_TIMEOUT, 10));
+const listenRabbit = () => {
+    listen(parseInt(JOB_TIMEOUT || DEFAULT_JOB_TIMEOUT, 10))
+        .catch(() => {
+            console.log('Failed to connect rabbit mq, retry in 5 seconds');
+            setTimeout(() => listenRabbit(), 5000);
+        });
+};
+
+listenRabbit();

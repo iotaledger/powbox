@@ -36,4 +36,4 @@ COPY --from=build /opt /opt
 
 WORKDIR /app
 
-CMD node /app/src/worker/index.js
+CMD npm run start:worker
